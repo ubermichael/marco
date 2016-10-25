@@ -8,9 +8,7 @@
 
 namespace Nines\Marco;
 
-use Nines\Marco\Record\Directory;
-use Nines\Marco\Record\Field;
-use Nines\Marco\Record\Leader;
+use Exception;
 
 /**
  * Description of Record
@@ -19,36 +17,61 @@ use Nines\Marco\Record\Leader;
  */
 class Record {
 	
+	const RECORD_TERMINATOR = "\x1D";
+
+	const FIELD_TERMINATOR = "\x1E";
+	
+	const SUBFIELD_START = "\x1F";
+	
 	private $leader;
 	
-	/**
-	 * @var Field[]
-	 */
-	private $content;
-
+	private $directory;
+	
+	private $fields;
+	
+	private $data;
+	
 	public function __construct($data) {
-		$this->leader = new Leader(substr($data, 0, 24));		
-		$baseAddr = $this->leader->getDataAddress();		
-		$directory = new Directory($data, $baseAddr); 	
-		foreach($directory as $entry) {
-			$field = new Field(
-				$entry->getField(), 
-				substr($data, $baseAddr+$entry->getStart())
-			);
-			$this->content[] = $field;
+		if(substr($data, -1) !== self::RECORD_TERMINATOR) {
+			throw new Exception("Record should end with \\x1D. Found " . substr($data, -1));
 		}
+		$length = substr($data, 0, 5);
+		if(strlen($data) !== intval($length)) {
+			throw new Exception("Expected record length " . intval($length) . " does not match actual length " . strlen($data));
+		}
+		$this->data = $data;
+		$this->leader = new Leader($data);
+		$this->directory = new Directory($data, $this->leader);
 	}
 	
-	public function getContent() {
-		return $this->content;
+	public function getData() {
+		return $this->data;
 	}
 	
-	public function __toString() {
-		$s = '';
-		foreach($this->content as $field) {
-			$s .= $field;
+	public function getLeader() {
+		return $this->leader;
+	}
+	
+	public function getDirectory() {
+		return $this->directory;
+	}
+	
+	public function getFields() {
+		$fields = array();
+		$base = $this->leader->getBaseAddress();
+		foreach($this->directory as $entry) {
+			$fieldData = substr($this->data, $base + $entry->getStart(), $entry->getLength());
+			if(substr($entry->getField(), 0, 2) === '00') {
+				$fields[] = new Field($entry->getField() . '   ' . substr($fieldData, 0, -1));
+				continue;
+			}
+			$fieldList = explode("\x1F", $fieldData);
+			$fieldList[count($fieldList)-1] = substr($fieldList[count($fieldList)-1], 0, -1);
+			for($i = 1; $i < count($fieldList); ++$i) {
+				$fields[] = new Field($entry->getField() . substr($fieldData, 0, 2) . $fieldList[$i]);
+			}
 		}
-		return $s;
+		return $fields;
 	}
 	
 }
