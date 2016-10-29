@@ -49,7 +49,7 @@ class Leader {
 		return $this->data[8];
 	}
 	
-	public function getScheme() {
+	public function getEncodingScheme() {
 		return $this->data[9];
 	}
 	
