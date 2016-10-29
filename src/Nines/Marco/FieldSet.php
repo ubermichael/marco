@@ -7,6 +7,7 @@ use Iterator;
 class FieldSet implements Iterator {
 
     private $fields;
+    
     private $position;
 
     public function __construct($data, Leader $leader, Directory $directory) {
@@ -27,7 +28,19 @@ class FieldSet implements Iterator {
             }
         }
     }
-
+    
+    public function getField($code, $i1 = null, $i2 = null, $sub = null) {
+        $i1 = (is_null($i1) ? '.' : $i1);
+        $i2 = (is_null($i2) ? '.' : $i2);
+        $sub = (is_null($sub) ? '.' : $sub);
+        $re = "/^{$code}{$i1}{$i2}{$sub}$/u";
+        return array_values(
+            array_filter($this->fields, function(Field $field) use ($re) {
+                return preg_match($re, $field->getCode(true));
+            })
+        );
+    }
+    
     public function current() {
         if($this->valid()) {
             return $this->fields[$this->position];

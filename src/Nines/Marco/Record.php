@@ -33,6 +33,10 @@ class Record {
         $this->directory = new Directory($data, $this->leader);
         $this->fieldset = new FieldSet($data, $this->leader, $this->directory);
     }
+    
+    public function getField($code, $i1 = null, $i2 = null, $sub = null) {
+        return $this->fieldset->getField($code, $i1, $i2, $sub);
+    }
 
     public function getData() {
         return $this->data;

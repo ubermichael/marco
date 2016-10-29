@@ -43,9 +43,13 @@ class Field {
     }
 
     public function getData() {
+        return $this->data;
+    }
+    
+    public function getValue() {
         return substr($this->data, 6);
     }
-
+    
     public function __toString() {
         return "={$this->getCode()} {$this->getInd1()}{$this->getInd2()} \${$this->getSubCode()} {$this->getData()}";
     }
