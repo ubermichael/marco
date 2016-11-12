@@ -1,6 +1,6 @@
 <?php
 
-namespace Nines\Marco;
+namespace Nines\Marco\Record;
 
 use Exception;
 use Iterator;
@@ -18,6 +18,7 @@ class FileIterator implements Iterator {
     private $path;
     private $record;
     private $offset;
+	private $factory;
 
     public function __construct($path) {
         if (!file_exists($path)) {
@@ -26,6 +27,7 @@ class FileIterator implements Iterator {
         if (!is_readable($path)) {
             throw new Exception("Cannot open {$path}: Path is not readable.");
         }
+		$this->factory = new Factory();
         $this->record = null;
         $this->path = $path;
         $this->handle = @fopen($path, 'rb');
@@ -50,7 +52,7 @@ class FileIterator implements Iterator {
             return;
         }
         $content = fread($this->handle, intval($length) - self::LENGTH_BYTES);
-        $this->record = new Record($length . $content);
+        $this->record = $this->factory->build($length . $content);
 
         $this->offset++;
     }

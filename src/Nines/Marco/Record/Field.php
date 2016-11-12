@@ -1,6 +1,6 @@
 <?php
 
-namespace Nines\Marco;
+namespace Nines\Marco\Record;
 
 class Field {
 
@@ -51,7 +51,7 @@ class Field {
     }
     
     public function __toString() {
-        return "={$this->getCode()} {$this->getInd1()}{$this->getInd2()} \${$this->getSubCode()} {$this->getData()}";
+        return "={$this->getCode()} {$this->getInd1()}{$this->getInd2()} \${$this->getSubCode()} {$this->getValue()}";
     }
 
 }

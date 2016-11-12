@@ -1,9 +1,24 @@
 <?php
 
-namespace Nines\Marco;
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 
-class Crosswalk {
+namespace Nines\Marco\Transform;
 
+use Nines\DublinCore\Field as DcField;
+use Nines\DublinCore\Record as DcRecord;
+use Nines\Marco\Record\Field;
+use Nines\Marco\Record\Record;
+
+/**
+ * Description of QualifiedDublinCore
+ *
+ * @author Michael Joyce <mjoyce@sfu.ca>
+ */
+class DublinCore {
     private $properties = array(
         'contributor', 'coverage', 'creator', 'date', 'description',
         'format', 'identifier', 'language', 'publisher', 'relation',
@@ -66,7 +81,7 @@ class Crosswalk {
         $langs = $record->getField('008');
         $lang = array();
         if(count($langs)) {
-            $lang = array(substr($langs[0], 35, 3));
+            $lang = array(substr($langs[0]->getValue(), 35, 3));
         }
         return array_merge(
             $lang,
@@ -102,16 +117,22 @@ class Crosswalk {
     }
 
     public function subject(Record $record) {
-        return $this->values(array_merge(
-                $record->getField('(?:050|060|080|082)'),
-                $record->getField('(?:600|610|611|630|650|653)')
-        ));
+        return $this->values(
+			array_merge(
+				$record->getField('(?:050|060|080|082)'),
+				$record->getField('(?:600|610|611|630|650|653)')
+			)
+		);
     }
 
     public function title(Record $record) {
-        return $this->values(
-            $record->getField('(?:210|222|240|242|243|245|246|247)')
-        );
+		$re = '(?:210|222|240|242|243|245|246|247)';
+		$fields = $record->getField($re);
+		$filtered = array_filter($fields, function(Field $f){
+			return $f->getSubCode() != 6;
+		});
+		
+        return $this->values($filtered);
     }
 
     public function type(Record $record) {
@@ -153,14 +174,19 @@ class Crosswalk {
     }
 
     public function dc(Record $record) {
-        $result = array();
+		$dcRecord = new DcRecord();
         foreach($this->properties as $name) {
-            $values = $this->$name($record);
-            if(count($values) > 0) {
-                $result[$name] = $values;
-            }
+			$values = $this->$name($record);
+			foreach($values as $value) {
+				if(ctype_space($value) || $value === '') {
+					continue;
+				}
+				$field = new DcField();
+				$field->setElement($name);
+				$field->setValue($value);
+				$dcRecord->addField($field);
+			}
         }
-        return $result;
+		return $dcRecord;
     }
-
 }

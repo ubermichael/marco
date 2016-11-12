@@ -1,6 +1,6 @@
 <?php
 
-namespace Nines\Marco;
+namespace Nines\Marco\Record;
 
 use Iterator;
 
@@ -29,11 +29,19 @@ class FieldSet implements Iterator {
         }
     }
     
+	/**
+	 * @param string $code
+	 * @param string $i1
+	 * @param string $i2
+	 * @param string $sub
+	 * @return Field
+	 */
     public function getField($code, $i1 = null, $i2 = null, $sub = null) {
         $i1 = (is_null($i1) ? '.' : $i1);
         $i2 = (is_null($i2) ? '.' : $i2);
         $sub = (is_null($sub) ? '.' : $sub);
         $re = "/^{$code}{$i1}{$i2}{$sub}$/u";
+		
         return array_values(
             array_filter($this->fields, function(Field $field) use ($re) {
                 return preg_match($re, $field->getCode(true));
