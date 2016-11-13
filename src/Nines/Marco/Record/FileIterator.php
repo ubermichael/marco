@@ -12,8 +12,6 @@ use Iterator;
  */
 class FileIterator implements Iterator {
 
-    const LENGTH_BYTES = 5;
-
     private $handle;
     private $path;
     private $record;
@@ -46,12 +44,12 @@ class FileIterator implements Iterator {
             $this->record = null;
             return;
         }
-        $length = fread($this->handle, self::LENGTH_BYTES);
+        $length = fread($this->handle, Record::LENGTH_BYTES);
         if (!$length) {
             $this->record = null;
             return;
         }
-        $content = fread($this->handle, intval($length) - self::LENGTH_BYTES);
+        $content = fread($this->handle, intval($length) - Record::LENGTH_BYTES);
         $this->record = $this->factory->build($length . $content);
 
         $this->offset++;

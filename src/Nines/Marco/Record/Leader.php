@@ -11,12 +11,10 @@ use Exception;
  */
 class Leader {
 	
-	const LEADER_BYTES = 24;
-	
 	private $data;
 	
 	public function __construct($data) {
-        $this->data = substr($data, 0, self::LEADER_BYTES);
+        $this->data = substr($data, 0, Record::LEADER_BYTES);
 	}
 	
 	public function getData() {
@@ -84,7 +82,7 @@ class Leader {
 	}
 	
 	public function __toString() {
-		return "=LDR       " . $this->data;
+		return "=LDR        " . $this->data;
 	}
     
 

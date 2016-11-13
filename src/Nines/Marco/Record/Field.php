@@ -4,54 +4,90 @@ namespace Nines\Marco\Record;
 
 class Field {
 
-    private $data;
+	private $code;
+	
+	private $i1;
+	
+	private $i2;
+	
+	private $data;
+	
+	public function __construct() {
+		$this->i1 = ' ';
+		$this->i2 = ' ';
+	}
 
-    public function __construct($data) {
-        $this->data = $data;
-    }
+	public function getCode() {
+		return $this->code;
+	}
 
-    public function getCode($subcode = false) {
-        if($subcode) {
-            return substr($this->data, 0, 6);
-        }
-        return substr($this->data, 0, 3);
-    }
+	public function getI1() {
+		return $this->i1;
+	}
 
-    public function isControl() {
-        return substr($this->data, 0, 2) === '00';
-    }
+	public function getI2() {
+		return $this->i2;
+	}
 
-    public function getInd1() {
-        if ($this->isControl()) {
-            return ' ';
-        }
-        return $this->data[3];
-    }
+	public function getData() {
+		return $this->data;
+	}
 
-    public function getInd2() {
-        if ($this->isControl()) {
-            return ' ';
-        }
-        return $this->data[4];
-    }
+	public function setCode($code) {
+		$this->code = $code;
+		return $this;
+	}
 
-    public function getSubCode() {
-        if ($this->isControl()) {
-            return ' ';
-        }
-        return $this->data[5];
-    }
+	public function setI1($i1) {
+		$this->i1 = $i1;
+		return $this;
+	}
 
-    public function getData() {
-        return $this->data;
-    }
-    
-    public function getValue() {
-        return substr($this->data, 6);
-    }
-    
-    public function __toString() {
-        return "={$this->getCode()} {$this->getInd1()}{$this->getInd2()} \${$this->getSubCode()} {$this->getValue()}";
-    }
+	public function setI2($i2) {
+		$this->i2 = $i2;
+		return $this;
+	}
 
+	public function setData($data) {
+		$this->data = $data;
+		return $this;
+	}
+
+	public function isControl() {
+		return substr($this->code, 0, 2) === '00';
+	}
+	
+	public function getSubfield($c) {
+		if(array_keys($this->data, $c)) {
+			return $this->data[$c];
+		} 
+		return null;
+	}
+	
+	public function setSubfield($c, $v) {
+		if($this->isControl()) {
+			throw new Exception("Control fields do not have subfields.");
+		}
+		$this->data[$c] = $v;
+	}
+	
+	public function __toString() {
+		$str = "={$this->getCode()} {$this->getI1()}{$this->getI2()} ";
+		if($this->isControl()) {
+			$str .= "    " . $this->data;
+			return $str;
+		}
+		$first = true;
+		foreach($this->data as $k => $v) {
+			$d = wordwrap($v, 65, "\n            ", true);
+			if($first) {
+				$first = false;
+				$str .= " $${k} $d";
+			} else {
+				$str .= "\n         $${k} $d";
+			}
+		}
+		return $str;
+	}
+	
 }
