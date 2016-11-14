@@ -51,6 +51,10 @@ class Record {
 	public function getFields() {
 		return $this->fields;
 	}
+	
+	public function findField($code, $i1, $i2) {
+		
+	}
 
 	public function __toString() {
 		$str = $this->leader . "\n";
