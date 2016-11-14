@@ -17,46 +17,47 @@ use Nines\Marco\DublinCore\Field as DcField;
  * @author Michael Joyce <mjoyce@sfu.ca>
  */
 class QualifiedDublinCore {
-	
+
     private function values(array $fields) {
         return array_map(function(Field $field) {
             return $field->getValue();
         }, $fields);
     }
 
-	public function accrualMethod(MarcRecord $record) {
-		$fields = $record->getField('541', null, null, 'c');		
-		$dcFields = array();
-		foreach($fields as $f) {
-			$dc = new DcField();
-			$dc->setElement('accrualMethod');
-			$dc->setValue($f->getValue());
-			$dcFields[] = $dc;
-		}
-		return $dcFields;
-	}
-	
-	public function accrualPeriodicity(MarcRecord $record) {
-		$fields = $record->getField('310', null, null, 'a');		
-		$dcFields = array();
-		foreach($fields as $f) {
-			$dc = new DcField();
-			$dc->setElement('accrualPeriodicity');
-			$dc->setValue($f->getValue());
-			$dcFields[] = $dc;
-		}
-		return $dcFields;
-	}
-	
-	public function audience(MarcRecord $record) {
-		$fields = $record->getField('510');		
-		$dcFields = array();
-		foreach($fields as $f) {
-			$dc = new DcField();
-			$dc->setElement('audience');
-			$dc->setValue($f->getValue());
-			$dcFields[] = $dc;
-		}
-		return $dcFields;
-	}
+    public function accrualMethod(MarcRecord $record) {
+        $fields = $record->getField('541', null, null, 'c');
+        $dcFields = array();
+        foreach ($fields as $f) {
+            $dc = new DcField();
+            $dc->setElement('accrualMethod');
+            $dc->setValue($f->getValue());
+            $dcFields[] = $dc;
+        }
+        return $dcFields;
+    }
+
+    public function accrualPeriodicity(MarcRecord $record) {
+        $fields = $record->getField('310', null, null, 'a');
+        $dcFields = array();
+        foreach ($fields as $f) {
+            $dc = new DcField();
+            $dc->setElement('accrualPeriodicity');
+            $dc->setValue($f->getValue());
+            $dcFields[] = $dc;
+        }
+        return $dcFields;
+    }
+
+    public function audience(MarcRecord $record) {
+        $fields = $record->getField('510');
+        $dcFields = array();
+        foreach ($fields as $f) {
+            $dc = new DcField();
+            $dc->setElement('audience');
+            $dc->setValue($f->getValue());
+            $dcFields[] = $dc;
+        }
+        return $dcFields;
+    }
+
 }
