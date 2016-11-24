@@ -82,7 +82,7 @@ class Leader {
 	}
 	
 	public function __toString() {
-		return "=LDR        " . $this->data;
+		return "=LDR       " . $this->data;
 	}
     
 
