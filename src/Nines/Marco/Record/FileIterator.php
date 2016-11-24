@@ -16,6 +16,7 @@ class FileIterator implements Iterator {
     private $path;
     private $record;
     private $offset;
+	private $bytes;
 	private $factory;
 
     public function __construct($path) {
@@ -30,6 +31,7 @@ class FileIterator implements Iterator {
         $this->path = $path;
         $this->handle = @fopen($path, 'rb');
         $this->offset = 0;
+		$this->bytes = 0;
         if ($this->handle === false) {
             $error = error_get_last();
             throw new Exception("Cannot read {$path}: {$error['message']}");
@@ -48,10 +50,10 @@ class FileIterator implements Iterator {
         if (!$length) {
             $this->record = null;
             return;
-        }
+        }		
         $content = fread($this->handle, intval($length) - Record::LENGTH_BYTES);
         $this->record = $this->factory->build($length . $content);
-
+		$this->bytes += intval($length);
         $this->offset++;
     }
 
@@ -77,7 +79,12 @@ class FileIterator implements Iterator {
         fseek($this->handle, 0);
         $this->offset = 0;
         $this->record = null;
+		$this->bytes = 0;
     }
+	
+	public function bytes() {
+		return $this->bytes;
+	}
 
     public function valid() {
         return $this->handle !== null && !feof($this->handle);
