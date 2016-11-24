@@ -52,8 +52,24 @@ class Record {
 		return $this->fields;
 	}
 	
-	public function findField($code, $i1, $i2) {
-		
+	public function findField($code, $i1 = null, $i2 = null) {
+		if( ! is_array($code)) {
+			$code = array($code);
+		}
+		$fields = [];		
+		foreach($this->fields as $field) {
+			if( ! in_array($field->getCode(), $code)) {
+				continue;
+			}
+			if($i1 !== null && $i1 != $field->getI1()) {
+				continue;
+			}
+			if($i2 !== null && $i2 != $field->getI2()) {
+				continue;
+			}
+			$fields[] = $field;
+		}
+		return $fields;
 	}
 
 	public function __toString() {

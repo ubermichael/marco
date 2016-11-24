@@ -58,17 +58,27 @@ class Field {
 	}
 	
 	public function getSubfield($c) {
-		if(array_keys($this->data, $c)) {
+		if(array_key_exists($c, $this->data)) {
 			return $this->data[$c];
 		} 
 		return null;
 	}
-	
+		
 	public function setSubfield($c, $v) {
 		if($this->isControl()) {
 			throw new Exception("Control fields do not have subfields.");
 		}
 		$this->data[$c] = $v;
+	}
+	
+	/**
+	 * Gets the value of a field, including all subfields.
+	 */
+	public function getValue($separator = ' ') {
+		if( ! is_array($this->data)) {
+			return $this->data;
+		}
+		return implode($separator, array_values($this->data));
 	}
 	
 	public function __toString() {
