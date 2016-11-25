@@ -163,10 +163,10 @@ class DublinCoreCrosswalk {
 				continue;
 			}
 			$r = [];
-			if(($o = $field->getSubcode('o')) !== null) {
+			if(($o = $field->getSubfield('o')) !== null) {
 				$r[] = $o;
 			}
-			if(($t = $field->getSubcode('t')) !== null) {
+			if(($t = $field->getSubfield('t')) !== null) {
 				$r[] = $t;
 			}
 			if(count($r) > 0) {
