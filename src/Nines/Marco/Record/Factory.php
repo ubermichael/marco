@@ -59,7 +59,7 @@ class Factory {
         $field->setI1($data[0]);
         $field->setI2($data[1]);
         $subfields = explode(Record::SUBFIELD_START, $data);
-        foreach (array_slice($subfields, 0) as $subfield) {
+        foreach (array_slice($subfields, 1) as $subfield) {
             if( ! $subfield) {
                 continue;
             }
